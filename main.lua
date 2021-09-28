@@ -36,9 +36,13 @@ function love.load()
             fullscreen = false,
             title = NAME.." ["..VERSION.."]"
         },
+        graphics = {
+            render_distance = 15,
+            cell_shade = false,
+        },
         debug = {
             enabled = true,
-            text_color = {0, 0, 0}
+            text_color = {3, 252, 152}
         }
     }
 
@@ -50,7 +54,7 @@ function love.load()
     end
 
     -- Creating window
-    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = false})
+    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = true})
     love.window.setTitle(config.window.title)
 
     --Graphics setup
@@ -81,6 +85,7 @@ function love.load()
     g3d = require("src/class/g3d")
     map.init()
 
+    g3d.shader:send("falloff", config.graphics.render_distance * 0.7)
     state:load("game")
 end
 
@@ -101,6 +106,7 @@ end
 
 function love.draw()
     _RENDERED = 0
+    lg.setBlendMode("alpha")
     lg.setColor(1, 1, 1, 1)
     state:draw()
     if config.debug.enabled then
@@ -119,6 +125,10 @@ function love.keypressed(key)
     keybind:keypressed(key)
     keybind:trigger("keypressed", key)
     state:keypressed(key)
+
+    if key == "1" then
+        config.graphics.cell_shade = not config.graphics.cell_shade 
+    end
 end
 
 function love.textinput(t)

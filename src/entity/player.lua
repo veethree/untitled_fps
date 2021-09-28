@@ -4,6 +4,7 @@ local player = {
     control = true,
     scale = 0.5,
     speed = 2.5,
+    move = 0,
     draw = function(e)
         lg.setColor(1, 1, 1, 1)
         --e.model:draw()
@@ -15,8 +16,8 @@ local player = {
     
         local gx = x + dist * cos(a - 0.2)
         local gy = y + dist * sin(a)
-        local gz = z + dist * b
-        e.gun:setTransform({gx, gy, gz - 0.3}, {-math.pi / 2, b, a - math.pi})
+        local gz = z + dist * b 
+        e.gun:setTransform({gx, gy, gz - (0.25 + (0.01 * sin(e.move)))}, {-math.pi / 2, b, a - math.pi})
 
         local oc = lg.getCanvas()
         lg.setCanvas({state:get_state().fgCanvas, depth=true})
@@ -24,8 +25,6 @@ local player = {
         e.gun:draw()
         lg.setCanvas(oc)
 
-        lg.setColor(1, 0, 1, 1)
-        lg.print(floor(e.position[1]).."x"..floor(e.position[2]), 12, 100)
     end
 }
 

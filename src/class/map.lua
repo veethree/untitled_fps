@@ -8,9 +8,10 @@ function map.init()
     map.tile_texture[1] = _TEXTURE["wall"]
     map.tile_texture[2] = _TEXTURE["glass"]
     -- This table maps entities to tile id's
-    map.entity_type = {
-        "spawn_point"
-    }
+    map.entity_type = {}
+    map.entity_type[1] = "spawn_point"
+    map.entity_type[2] = "table"
+
 end
 
 function map.tileTexture(tex, width, height)
@@ -67,6 +68,11 @@ function map.load(path, world)
                 if entity == "spawn_point" then
                     spawn_point[1] = x
                     spawn_point[2] = y
+                elseif entity == "table" then
+                    local table = world:newEntity("src/entity/object.lua")
+                    --(object, position, rotation, scale)
+                    table:init("table", {x, y, 0}, {-math.pi / 2, 0, -math.pi / 2})
+                    print(entity)
                 end
             end
         end

@@ -149,7 +149,7 @@ end
 
 -- draw the model
 function model:draw(shader)
-    local shader = shader or self.shader
+    local shader = shader or g3d.shader
     love.graphics.setShader(shader)
     shader:send("modelMatrix", self.matrix)
     if shader:hasUniform "isCanvasEnabled" then

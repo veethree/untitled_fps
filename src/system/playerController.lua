@@ -31,6 +31,8 @@ return {
             local angle = math.atan2(moveY, moveX)
             newX = newX + math.cos(direction + angle) * e.speed * dt
             newY = newY + math.sin(direction + angle) * e.speed * dt
+            e.move = e.move + 10 * dt
+            if e.move > math.pi * 2 then e.move = 0 end
         end
 
         -- Collision code
@@ -102,6 +104,7 @@ return {
         g3d.camera.firstPersonLook(_MOUSE_X * look_sensitivity, _MOUSE_Y * look_sensitivity)
 
         local x, y, z = unpack(e.position)
+        g3d.shader:send("player", e.position)
         g3d.camera.lookInDirection(x,y,z)
 
     end

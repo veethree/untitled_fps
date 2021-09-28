@@ -9,7 +9,7 @@ function game:load(data)
     end
 
     --Loading map
-    local map_data, spawn_point = map.load("src/map/testMap.lua", self.world)
+    local map_data, spawn_point = map.load("src/map/testMap2.lua", self.world)
     self.map = map_data
 
     -- Loading player
@@ -25,6 +25,12 @@ function game:load(data)
 
     self.mainCanvas = lg.newCanvas()
     self.fgCanvas = lg.newCanvas()
+
+    self.shaderCanvas = lg.newCanvas()
+
+    self.sobel = fs.load("src/assets/shader/sobel.lua")()
+    self.sobel:send("image_size", {lg.getWidth(), lg.getHeight()})
+    self.sobel:send("kernel", -1, -1, -1, -1, 8, -1, -1, -1, -1)
     
 end
 
@@ -35,6 +41,8 @@ function game:update(dt)
 end
 
 function game:draw()
+    lg.setBlendMode("alpha")
+
     local dt = love.timer.getDelta()
     lg.setCanvas({self.mainCanvas, depth = true})
     lg.clear()
@@ -43,65 +51,39 @@ function game:draw()
 
 
     lg.setColor(1, 1, 1, 1)
+    lg.setCanvas(self.shaderCanvas)
+    lg.clear()
     lg.draw(self.mainCanvas)
     lg.draw(self.fgCanvas)
+    lg.setCanvas()
 
-    -- minimap
-    local scale = 1
+    lg.draw(self.shaderCanvas)
+
+    -- CELL SHADE
+    if config.graphics.cell_shade then
+        lg.setBlendMode("multiply", "premultiplied")
+        lg.setShader(self.sobel)
+        lg.setColor(1, 1, 1, 0.1)
+        lg.draw(self.shaderCanvas)
+        lg.setShader()
+    end
+
+    --minimap
+    local scale = 3
     for y=1, #self.map do
         for x=1, #self.map[y] do
             local c = self.map[y][x]
             lg.setColor(c, c, c, 1)
             local px, py = floor(self.player.position[1] + 0.5), floor(self.player.position[2] + 0.5)
-            local sx, sy = x, y
-            if c > 0 then
-                if x < px then
-                    sx = x + 1
-                elseif x > px then
-                    sx = x - 1
-                end
-
-                if y < py then
-                    sy = y + 1
-                elseif y > py then
-                    sy = y - 1
-                end
-
-                local vis = bresenham.los(sx, sy, px, py, function(a, b)
-                    if self.map[b][a] == 0 then
-                        return true
-                    else
-                        return false
-                    end
-                end)
-
-                if vis then
-                    lg.setColor(1, 0, 0)
-                end
-
-            end
-
-            -- if c == 1 then
-            --     local vis = bresenham.los(sx, sy, px, py, function(a, b)
-            --         if self.map[b][a] == 0 then
-            --             return true
-            --         else
-            --             return false
-            --         end
-            --     end)
-
-            --     if vis then
-            --         lg.setColor(1, 0, 0)
-            --     end
-            -- end
-
+            
             if x == px and y == py then
                 lg.setColor(1, 0, 1, 1)
             end
             lg.rectangle("fill", (x - 1) * scale, (y - 1) * scale, scale, scale)
         end
     end
-
+    
+    lg.setBlendMode("alpha")
     lg.setColor(self.crosshair.color)
     lg.circle("line", lg.getWidth() / 2, lg.getHeight() / 2, self.crosshair.size)
 

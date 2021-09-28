@@ -1,6 +1,5 @@
 -- This system handels rendering object
 
-
 return {
     filter = function(e)
         return e.visible or false
@@ -9,6 +8,7 @@ return {
     process = function(e)
         local map = state:get_state().map
         local player = state:get_state().player
+        local d = e.model:getDistanceFrom(unpack(player.position))
         if e.draw then
             local px, py = floor(player.position[1] + 0.5), floor(player.position[2] + 0.5)
             local x, y = e.position[1], e.position[2]
@@ -36,9 +36,15 @@ return {
             end
 
    
-            if visible or true then 
+            if d < config.graphics.render_distance and not e.flat then 
+                lg.setColor(1, 1, 1, 1)
                 e.draw(e)
                 _RENDERED = _RENDERED + 1
+            end
+
+            if e.flat then
+                lg.setColor(1, 1, 1, 1)
+                e.draw(e)
             end
         end
     end}
