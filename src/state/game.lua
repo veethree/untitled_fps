@@ -140,7 +140,7 @@ function game:mousepressed(x, y, key)
         local rx, ry ,rz = g3d.camera.getLookVector()
         local direction = {rx, ry, rz}
         bullet:init({x, y, z}, direction)
-        self.flash = 1.2
+        --self.flash = 1.2
     end
 end
 

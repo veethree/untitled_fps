@@ -15,7 +15,11 @@ return {
             newZ = z + dz * e.speed * dt
         end
 
-        local col_objects, len = e.world:getEntities(function(b) return b.shootable or false end)
+        local max_dist
+        local filter = function(b)
+            return b.shootable and distance(x, y, b.position[1], b.position[2]) < 5
+        end
+        local col_objects, len = e.world:getEntities(filter)
 
         local col = false
         local other = false
@@ -41,7 +45,7 @@ return {
         if col then
             e._REMOVE = true
             if other then
-                if other._TYPE == "evilRobot" then
+                if other._TYPE == "mob" then
                     other._REMOVE = true
                 end
             end

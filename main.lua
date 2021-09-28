@@ -34,16 +34,16 @@ function love.load()
         window = {
             width = 1024,
             height = 576,
-            fullscreen = false,
+            fullscreen = true,
             title = NAME.." ["..VERSION.."]"
         },
         graphics = {
-            render_distance = 20,
+            render_distance = 15,
             cell_shade = false,
         },
         debug = {
             enabled = true,
-            text_color = {255, 0, 255}
+            text_color = {255, 255, 255}
         }
     }
 
@@ -55,7 +55,7 @@ function love.load()
     end
 
     -- Creating window
-    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = true})
+    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = false})
     love.window.setTitle(config.window.title)
 
     --Graphics setup
@@ -69,6 +69,17 @@ function love.load()
     font = {
         regular = lg.newFont("src/assets/font/monogram.ttf", 42 * scale_x)
     }
+    lg.setFont(font.regular)
+    
+    g3d = require("src/class/g3d")
+    -- Loading models
+    _MODEL = {}
+    for i,v in ipairs(fs.getDirectoryItems("src/assets/model")) do
+        if get_file_type(v) == "obj" then
+            local file_name = get_file_name(v)
+            _MODEL[file_name] = g3d.newModel(f("src/assets/model/%s", v))
+        end
+    end
 
     --Loading textures
     _TEXTURE = {}
@@ -83,13 +94,12 @@ function love.load()
 
     _MOUSE_X, _MOUSE_Y = 0, 0 -- The mouse position of the Last frame
 
-    g3d = require("src/class/g3d")
     map.init()
 
-    local fog_color = {0, 0, 0 , 1}
+    local fog_color = {0.1, 0, 0, 1}
 
-    g3d.shader:send("fog_max", config.graphics.render_distance)
-    g3d.shader:send("fog_min", config.graphics.render_distance * 0.1)
+    g3d.shader:send("fog_max", config.graphics.render_distance * 0.8)
+    g3d.shader:send("fog_min", 0.1)
     g3d.shader:send("fog_color", fog_color)
     state:load("game")
     lg.setBackgroundColor(fog_color)

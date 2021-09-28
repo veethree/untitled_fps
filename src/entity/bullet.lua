@@ -3,7 +3,7 @@ local bullet = {
     visible = false,
     projectile = true,
     speed = 10,
-    scale = 0.2,
+    scale = 0.1,
     stop = false,
     draw = function(e)
         e.model:draw()
@@ -17,7 +17,9 @@ function bullet:init(position, direction, scale)
     --model = g3d.newModel(mesh, texture, translation, rotation, scale).
     local dir, pitch = g3d.camera.getDirectionPitch()
     local rotation = {pitch, 0, dir - (math.pi / 2)}
-    self.model = g3d.newModel("src/assets/model/bullet.obj", _TEXTURE["palette2"], position, rotation, scale)
+    self.model = deepcopy(_MODEL["bullet"])--g3d.newModel("src/assets/model/bullet.obj", _TEXTURE["palette2"], position, rotation, scale)
+    self.model:setTexture(_TEXTURE["palette2"])
+    self.model:setTransform(position, rotation, scale)
 
     self.position = position
     self.direction = direction
