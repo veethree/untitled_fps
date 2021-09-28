@@ -10,7 +10,8 @@ function map.init()
     -- This table maps entities to tile id's
     map.entity_type = {}
     map.entity_type[1] = "spawn_point"
-    map.entity_type[2] = "table"
+    map.entity_type[2] = "terminal"
+    map.entity_type[3] = "robot"
 
 end
 
@@ -68,11 +69,14 @@ function map.load(path, world)
                 if entity == "spawn_point" then
                     spawn_point[1] = x
                     spawn_point[2] = y
-                elseif entity == "table" then
+                elseif entity == "terminal" then
                     local table = world:newEntity("src/entity/object.lua")
                     --(object, position, rotation, scale)
                     table:init("table", {x, y, 0}, {-math.pi / 2, 0, -math.pi / 2})
-                    print(entity)
+                elseif entity == "robot" then
+                    local robot = world:newEntity("src/entity/evilRobot.lua")
+                    --(object, position, rotation, scale)
+                    robot:init({x, y, -0.05}, {math.pi / 2, 0, (math.pi / 2)})
                 end
             end
         end

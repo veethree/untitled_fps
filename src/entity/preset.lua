@@ -1,4 +1,4 @@
-return {
+local entity = {
     _TYPE = "type",
     visible = true,
     wrap = true,
@@ -6,3 +6,9 @@ return {
         -- Draw your entity here.
     end
 }
+
+function entity:init()
+
+end
+
+return entity

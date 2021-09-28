@@ -5,6 +5,7 @@ VERSION = 0.1
 lg = love.graphics
 fs = love.filesystem
 lk = love.keyboard
+lm = love.mouse
 random = math.random
 noise = love.math.noise
 sin = math.sin
@@ -37,12 +38,12 @@ function love.load()
             title = NAME.." ["..VERSION.."]"
         },
         graphics = {
-            render_distance = 15,
+            render_distance = 5,
             cell_shade = false,
         },
         debug = {
             enabled = true,
-            text_color = {3, 252, 152}
+            text_color = {255, 0, 255}
         }
     }
 
@@ -85,8 +86,13 @@ function love.load()
     g3d = require("src/class/g3d")
     map.init()
 
-    g3d.shader:send("falloff", config.graphics.render_distance * 0.7)
+    local fog_color = {0, 0, 0 , 1}
+
+    g3d.shader:send("fog_max", config.graphics.render_distance)
+    g3d.shader:send("fog_min", config.graphics.render_distance * 0.1)
+    g3d.shader:send("fog_color", fog_color)
     state:load("game")
+    lg.setBackgroundColor(fog_color)
 end
 
 function save_config()
@@ -113,8 +119,12 @@ function love.draw()
         local ent = "'_WORLD' is empty!"
         local look = g3d.camera.getDirectionPitch()
         look = (math.pi * 2) % look
+        local player_pos = "'_PLAYER' not found"
         if _WORLD then ent = #_WORLD:getEntities() end
-        local str = f("FPS: %d\nENTITIES:%s / %s\nCAMERA: %s", love.timer.getFPS(), tostring(_RENDERED) ,tostring(ent), tostring(look))
+        if _PLAYER then player_pos = (floor(_PLAYER.position[1] * 100) / 100).."x"..(floor(_PLAYER.position[2] * 100) / 100).."x"..(floor(_PLAYER.position[3] * 100) / 100) end
+
+
+        local str = f("FPS: %d\nENTITIES:%s / %s\nCAMERA: %s\nPLAYER: %s", love.timer.getFPS(), tostring(_RENDERED) ,tostring(ent), tostring(look), tostring(player_pos))
         lg.setColor(color(unpack(config.debug.text_color)))
         lg.printf(str, -12, 12, lg.getWidth(), "right")
     end

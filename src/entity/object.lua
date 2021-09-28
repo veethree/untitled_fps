@@ -1,6 +1,7 @@
 local object = {
     _TYPE = "object",
     visible = false,
+    shootable = true,
     draw = function(e)
         --lg.setColor(1, 1, 1, 1)
         e.model:draw()

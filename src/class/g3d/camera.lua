@@ -54,6 +54,11 @@ function camera.move(x, y, z)
     --camera.updateViewMatrix()
 end
 
+function camera.setFov(new)
+    camera.fov = new
+    camera.updateProjectionMatrix()
+end
+
 -- give the camera a point to look from and a point to look towards
 function camera.lookAt(x,y,z, xAt,yAt,zAt)
     camera.position[1] = x

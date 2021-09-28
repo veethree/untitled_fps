@@ -5,6 +5,7 @@ local player = {
     scale = 0.5,
     speed = 2.5,
     move = 0,
+    shootable = false,
     draw = function(e)
         lg.setColor(1, 1, 1, 1)
         --e.model:draw()
