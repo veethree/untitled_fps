@@ -38,7 +38,7 @@ function love.load()
             title = NAME.." ["..VERSION.."]"
         },
         graphics = {
-            render_distance = 5,
+            render_distance = 20,
             cell_shade = false,
         },
         debug = {

@@ -9,12 +9,15 @@ return {
         
         -- collect inputs
         local moveX, moveY = 0, 0
+        local speed = e.speed
         local newX = e.position[1]
         local newY = e.position[2]
         if love.keyboard.isDown "w" then moveX = moveX + 1 end
         if love.keyboard.isDown "a" then moveY = moveY + 1 end
         if love.keyboard.isDown "s" then moveX = moveX - 1 end
         if love.keyboard.isDown "d" then moveY = moveY - 1 end
+        if lk.isDown("lshift") then speed = e.speed /  2 end
+        if lk.isDown("space") then speed = e.speed *  2 end
         
         -- if love.keyboard.isDown "space" then
         --     e.position[3] = e.position[3] + e.speed*dt
@@ -29,14 +32,13 @@ return {
         local direction, pitch = g3d.camera.getDirectionPitch()
         if moveX ~= 0 or moveY ~= 0 then
             local angle = math.atan2(moveY, moveX)
-            newX = newX + math.cos(direction + angle) * e.speed * dt
-            newY = newY + math.sin(direction + angle) * e.speed * dt
-            e.move = e.move + 10 * dt
+            newX = newX + math.cos(direction + angle) * speed * dt
+            newY = newY + math.sin(direction + angle) * speed * dt
+            e.move = e.move + (speed * 4) * dt
             if e.move > math.pi * 2 then e.move = 0 end
         end
 
         -- Collision code
-
         local col_objects, len = e.world:getEntities(function(b) return b.solid or false end)
 
         local col = false
@@ -55,14 +57,6 @@ return {
 
         local fixed_x, fixed_y = newX, newY
         if col then
-            -- lg.print("L: " ..col[2], 12, 80)
-            -- lg.print("X: " ..col[3], 12, 100)
-            -- lg.print("Y: " ..col[4], 12, 120)
-            -- lg.print("Z: " ..col[5], 12, 140)
-
-            -- lg.print("NX: " ..col[6], 12, 160)
-            -- lg.print("NY: " ..col[7], 12, 180)
-            -- lg.print("NZ: " ..col[8], 12, 200)
 
             local other = col[1]
             local len = col[2] - (col_scale) + 0.01

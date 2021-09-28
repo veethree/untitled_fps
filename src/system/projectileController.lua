@@ -18,15 +18,17 @@ return {
         local col_objects, len = e.world:getEntities(function(b) return b.shootable or false end)
 
         local col = false
+        local other = false
         local closest = 10000
-        local col_scale = e.scale / 4
+        local col_scale = e.scale / 2
         for i,v in ipairs(col_objects) do
             --Model:sphereIntersection(src_x, src_y, src_z, radius)
-            local len, x, y, z, nx, ny, nz = v.model:sphereIntersection(newX, newY, e.position[3], col_scale)
+            local len, x, y, z, nx, ny, nz = v.model:sphereIntersection(newX, newY, newZ, col_scale)
             if len then
                 if len < closest then
                     closest = len
                     col = {v, len, x, y, z, nx, ny, nz}
+                    other = v
                 end
             end
         end
@@ -38,6 +40,11 @@ return {
 
         if col then
             e._REMOVE = true
+            if other then
+                if other._TYPE == "evilRobot" then
+                    other._REMOVE = true
+                end
+            end
         end
 
         e.model:setTranslation(newX, newY, newZ)

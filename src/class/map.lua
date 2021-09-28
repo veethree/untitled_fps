@@ -76,7 +76,7 @@ function map.load(path, world)
                 elseif entity == "robot" then
                     local robot = world:newEntity("src/entity/evilRobot.lua")
                     --(object, position, rotation, scale)
-                    robot:init({x, y, -0.05}, {math.pi / 2, 0, (math.pi / 2)})
+                    robot:init({x, y, -0.05}, {math.pi / 2, 0, (math.pi * 2) * random()})
                 end
             end
         end

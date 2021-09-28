@@ -36,10 +36,6 @@ function game:load(data)
     self.sobel:send("image_size", {lg.getWidth(), lg.getHeight()})
     self.sobel:send("kernel", -1, -1, -1, -1, 8, -1, -1, -1, -1)
 
-    self.blur = fs.load("src/assets/shader/blur.lua")()
-    self.blur:send("image_size", {lg.getWidth(), lg.getHeight()})
-    self.blur:send("intensity", 2)
-
     -- Camera zoom
     self.camera = {
         fov = math.pi / 2
@@ -61,7 +57,7 @@ function game:update(dt)
     if lm.isDown(2) then
         self.target_camera.fov = math.pi / 8
     else
-        self.target_camera.fov = math.pi / 2
+        self.target_camera.fov = math.pi / 1.8
     end
     
     g3d.camera.setFov(self.camera.fov)
@@ -115,8 +111,8 @@ function game:draw()
 
 
     --minimap
-    local scale = 3
-    for y=1, #self.map do
+    local scale = 4
+    for y=1 , #self.map do
         for x=1, #self.map[y] do
             local c = self.map[y][x]
             lg.setColor(c, c, c, 1)

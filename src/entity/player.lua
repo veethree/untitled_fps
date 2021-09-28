@@ -18,7 +18,7 @@ local player = {
         local gx = x + dist * cos(a - 0.2)
         local gy = y + dist * sin(a)
         local gz = z + dist * b 
-        e.gun:setTransform({gx, gy, gz - (0.25 + (0.01 * sin(e.move)))}, {-math.pi / 2, b, a - math.pi})
+        e.gun:setTransform({gx, gy, gz - (0.25 + (0.03 * sin(e.move)))}, {-math.pi / 2, b, a - math.pi})
 
         local oc = lg.getCanvas()
         lg.setCanvas({state:get_state().fgCanvas, depth=true})
