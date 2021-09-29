@@ -5,6 +5,9 @@ return {
 
     process = function(e, dt)
         local look_sensitivity = 200
+        if lm.isDown(2) then
+            look_sensitivity = 50
+        end
         -- Camera look
         
         -- collect inputs

@@ -34,12 +34,13 @@ function love.load()
         window = {
             width = 1024,
             height = 576,
-            fullscreen = true,
+            fullscreen = false,
             title = NAME.." ["..VERSION.."]"
         },
         graphics = {
-            render_distance = 15,
-            cell_shade = false,
+            render_distance = 10,
+            outline_shader = false,
+            rgb_shader = true,
         },
         debug = {
             enabled = true,
@@ -55,7 +56,7 @@ function love.load()
     end
 
     -- Creating window
-    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = false})
+    love.window.setMode(config.window.width, config.window.height, {fullscreen=config.window.fullscreen, vsync = true})
     love.window.setTitle(config.window.title)
 
     --Graphics setup
@@ -96,9 +97,9 @@ function love.load()
 
     map.init()
 
-    local fog_color = {0.1, 0, 0, 1}
+    local fog_color = {0.1, 0.1, 0.1, 1}
 
-    g3d.shader:send("fog_max", config.graphics.render_distance * 0.8)
+    g3d.shader:send("fog_max", config.graphics.render_distance)
     g3d.shader:send("fog_min", 0.1)
     g3d.shader:send("fog_color", fog_color)
     state:load("game")

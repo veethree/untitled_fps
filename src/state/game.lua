@@ -28,9 +28,9 @@ function game:load(data)
 
     self.bgCanvas = lg.newCanvas()
     self.fgCanvas = lg.newCanvas()
-    self.screenCanvas = lg.newCanvas() -- Combines bg and fg so shaders can  be aplied to both
+    self.screenCanvas = pp.new() -- Combines bg and fg so shaders can  be aplied to both
 
-    self.sobelCanvas = lg.newCanvas()
+    self.sobelCanvas = pp.new()
 
     self.sobel = fs.load("src/assets/shader/sobel.lua")()
     self.sobel:send("image_size", {lg.getWidth(), lg.getHeight()})
@@ -47,15 +47,24 @@ function game:load(data)
     smoof:new(self.camera, self.target_camera, 0.001, 0.001, true)
     --function smoof:new(object, target, smoof_value, completion_threshold, bind, callback)
 
-    self.flash = 1
+    self.flash = 1.1
     self.flash_speed = 2
     self.postShader = fs.load("src/assets/shader/post.lua")()
     self.postShader:send("intensity", self.flash)
+
+    self.rgbShader = fs.load("src/assets/shader/rgb.lua")()
+    self.rgbShader:send("intensity", (self.flash * 4) / lg.getWidth())
+
+    self.poster = fs.load("src/assets/shader/posterize.lua")()
+    self.poster:send("colors", 32)
+
+    self.bw = fs.load("src/assets/shader/invert.lua")()
+    self.bw:send("factor", 1-self.flash)
 end
 
 function game:update(dt)
     if lm.isDown(2) then
-        self.target_camera.fov = math.pi / 8
+        self.target_camera.fov = math.pi / 4
     else
         self.target_camera.fov = math.pi / 1.8
     end
@@ -68,6 +77,8 @@ function game:update(dt)
     self.flash = self.flash - self.flash_speed * dt
     if self.flash < 1 then self.flash = 1 end
     self.postShader:send("intensity", self.flash)
+    self.rgbShader:send("intensity", (self.flash * 10) / lg.getWidth())
+
 
     g3d.camera.firstPersonMovement(dt)
 end
@@ -83,32 +94,27 @@ function game:draw()
 
     -- Drawing to screen canvas
     lg.setColor(1, 1, 1, 1)
-    lg.setCanvas(self.screenCanvas)
-    lg.clear()
-    lg.draw(self.bgCanvas)
-    lg.draw(self.fgCanvas)
-    lg.setCanvas()
-    
+    local render = function()
+        lg.clear()
+        lg.draw(self.bgCanvas)
+        lg.draw(self.fgCanvas)
+    end
+    self.screenCanvas:drawTo(render)
+    self.sobelCanvas:drawTo(render)
 
-    -- Creating outline canvas
-    lg.setCanvas(self.sobelCanvas)
-    lg.clear()
-    lg.setShader(self.sobel)
-    lg.draw(self.screenCanvas)
-    lg.setShader()
-    lg.setCanvas()
-    
-    lg.setShader(self.postShader)
-    lg.draw(self.screenCanvas)
-    lg.setShader()
-
-
-    -- CELL SHADE
-    if config.graphics.cell_shade then
-        lg.setBlendMode("multiply", "premultiplied")
-        lg.draw(self.sobelCanvas)
+    local active_shaders = {self.postShader}
+    if config.graphics.rgb_shader then
+        active_shaders[#active_shaders + 1] = self.rgbShader
     end
 
+
+    self.screenCanvas:draw(unpack(active_shaders))
+
+    if config.graphics.outline_shader then
+        lg.setBlendMode("multiply", "premultiplied")
+        lg.setColor(1, 1, 1, 1)
+        self.screenCanvas:draw(self.sobel)
+    end
 
     --minimap
     local scale = 4
@@ -140,7 +146,7 @@ function game:mousepressed(x, y, key)
         local rx, ry ,rz = g3d.camera.getLookVector()
         local direction = {rx, ry, rz}
         bullet:init({x, y, z}, direction)
-        --self.flash = 1.2
+        self.flash = 1.2
     end
 end
 
